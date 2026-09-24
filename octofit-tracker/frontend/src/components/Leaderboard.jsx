@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getApiUrl, normalizeResponseData } from '../api.js';
+import { normalizeResponseData } from '../api.js';
 
 function Leaderboard() {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -7,10 +7,14 @@ function Leaderboard() {
 
   useEffect(() => {
     const controller = new AbortController();
+    const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim();
+    const apiUrl = codespaceName
+      ? `https://${codespaceName}-8000.app.github.dev/api/leaderboard/`
+      : 'http://localhost:8000/api/leaderboard/';
 
     async function loadLeaderboard() {
       try {
-        const response = await fetch(getApiUrl('/leaderboard/'), { signal: controller.signal });
+        const response = await fetch(apiUrl, { signal: controller.signal });
 
         if (!response.ok) {
           throw new Error(`Request failed with status ${response.status}`);

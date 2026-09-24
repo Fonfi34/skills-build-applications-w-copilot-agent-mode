@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getApiUrl, normalizeResponseData } from '../api.js';
+import { normalizeResponseData } from '../api.js';
 
 function Activities() {
   const [activities, setActivities] = useState([]);
@@ -7,10 +7,14 @@ function Activities() {
 
   useEffect(() => {
     const controller = new AbortController();
+    const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim();
+    const apiUrl = codespaceName
+      ? `https://${codespaceName}-8000.app.github.dev/api/activities/`
+      : 'http://localhost:8000/api/activities/';
 
     async function loadActivities() {
       try {
-        const response = await fetch(getApiUrl('/activities/'), { signal: controller.signal });
+        const response = await fetch(apiUrl, { signal: controller.signal });
 
         if (!response.ok) {
           throw new Error(`Request failed with status ${response.status}`);
